@@ -1,0 +1,320 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <style>
+      body {
+        margin: 0px;
+        padding: 0px;
+      }
+    </style>
+  </head>
+  <body>
+<header>
+
+</header>
+    <canvas id="workspace" style="position:absolute; top:0; left:0; z-index:2;"></canvas>
+
+
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+
+    <script>
+
+
+    (function(a){var b=a([1]);a.fn.each2=function(d){var c=-1;while((b.context=b[0]=this[++c])&&d.call(b[0],c,b)!==false){}return this}})(jQuery);
+
+    !function(t,e){function r(e,r,n){e||(e="div");var i,o,a=t(r.container),c=a.offset()||{left:0,top:0},s=[c.left+a.width(),c.top+a.height()],f={x:0,y:1,w:0,h:1};for(i in f)f.hasOwnProperty(i)&&(o=h.exec(r[i]),o&&(r[i]=s[f[i]]*o[1]/100));var u=a.find(e),d=[],l=!!r.furthest,p=!!r.checkHoriz,v=!!r.checkVert,x=l?0:1/0,g=parseFloat(r.x)||0,y=parseFloat(r.y)||0,k=parseFloat(g+r.w)||g,w=parseFloat(y+r.h)||y,F=r.tolerance||0,H=!!t.fn.each2,S=Math.min,m=Math.max;!r.includeSelf&&n&&(u=u.not(n)),0>F&&(F=0),u[H?"each2":"each"](function(e,r){var h,n,i,o,a=H?r:t(this),c=a.offset(),s=c.left,f=c.top,u=a.outerWidth(),M=a.outerHeight(),j=s+u,z=f+M,O=m(s,g),P=S(j,k),V=m(f,y),W=S(z,w),b=P>=O,q=W>=V;(p&&v||!p&&!v&&b&&q||p&&q||v&&b)&&(h=b?0:O-P,n=q?0:V-W,i=b||q?m(h,n):Math.sqrt(h*h+n*n),o=l?i>=x-F:x+F>=i,o&&(x=l?m(x,i):S(x,i),d.push({node:this,dist:i})))});var M,j,z,O,P=d.length,V=[];if(P)for(l?(M=x-F,j=x):(M=x,j=x+F),z=0;P>z;z++)O=d[z],O.dist>=M&&O.dist<=j&&V.push(O.node);return V}var h=/^([\d.]+)%$/;t.each(["nearest","furthest","touching"],function(h,n){var i={x:0,y:0,w:0,h:0,tolerance:1,container:document,furthest:"furthest"==n,includeSelf:!1,checkHoriz:"touching"!=n,checkVert:"touching"!=n};t[n]=function(h,n,o){if(!h||h.x===e||h.y===e)return t([]);var a=t.extend({},i,h,o||{});return t(r(n,a))},t.fn[n]=function(e,h){var n;if(e&&t.isPlainObject(e))return n=t.extend({},i,e,h||{}),this.pushStack(r(this,n));var o=this.offset(),a={x:o.left,y:o.top,w:this.outerWidth(),h:this.outerHeight()};return n=t.extend({},i,a,h||{}),this.pushStack(r(e,n,this))}})}(jQuery);
+
+
+
+
+      var $canvas = $('#workspace'),
+          context = $canvas[0].getContext('2d'),
+          isMouseDown = false, x, y;
+
+      context.canvas.width  = window.innerWidth;
+      context.canvas.height = window.innerHeight;
+
+      $(document).keyup(function(e){
+
+        //control
+        if (e.which === 17) {
+          context.clearRect(0, 0, $canvas.width(), $canvas.height());
+          $('.screen.active').removeClass('active');
+          isMouseDown = false;
+        }
+      
+      });
+
+      $(document).on("contextmenu",function(e){
+        $('#workspace').addClass('active');
+        e.preventDefault();
+      });
+
+      $(document).on("mousedown",function(e){
+        isMouseDown = true;
+        x = e.pageX;
+        y = e.pageY;    
+      });
+
+
+
+      $(document).bind("mouseup",function(e){
+        isMouseDown = false;
+        context.clearRect(0, 0, $canvas.width(), $canvas.height());
+        $('.screen.active').removeClass('active');
+        $('#workspace').removeClass('active');
+      });
+
+
+      $(document).bind("mousemove",function(e){
+          
+        if (e.button === 2 || (e.ctrlKey && isMouseDown)){
+
+          $('#workspace').addClass('active');
+
+          context.clearRect(0, 0, $canvas.width(), $canvas.height());
+
+
+          //white shadowy line
+          context.save();
+
+          context.shadowOffsetX = 0;
+          context.shadowOffsetY = 0;
+          context.shadowBlur = 2;
+          context.shadowColor = 'rgba(0, 0, 0, 0.25)';
+
+          context.beginPath();
+          context.lineWidth = 5;
+          context.strokeStyle = '#fff';
+          context.moveTo(x, y);
+          context.lineTo(e.pageX, e.pageY);
+          context.stroke();
+
+          context.fillStyle = "#fff";
+          context.beginPath();
+          context.arc(x, y, 5, 0, 2 * Math.PI, true);
+          context.fill();
+
+          context.beginPath();
+          context.arc(e.pageX, e.pageY, 5, 0, 2 * Math.PI, true);
+          context.fill();
+
+          context.restore();
+
+
+          //blue line
+
+
+          context.beginPath();
+          context.lineWidth = 1;
+          context.strokeStyle = '#33ABFF';
+          context.moveTo(x, y);
+          context.lineTo(e.pageX, e.pageY);
+          context.stroke();
+
+          context.fillStyle = "#33ABFF";
+          context.beginPath();
+          context.arc(x, y, 3, 0, 2 * Math.PI, true);
+          context.fill();
+
+          context.beginPath();
+          context.arc(e.pageX, e.pageY, 3, 0, 2 * Math.PI, true);
+          context.fill();
+
+          var screens = document.getElementById('screens');
+      
+          var $closestToPoint = $.nearest({x: e.pageX, y: e.pageY}, '.screen');
+
+          $('.screen.active').removeClass('active');
+
+          if (!$closestToPoint.find('a.active').length)
+            $closestToPoint.eq(0).addClass('active');
+
+
+        } else {
+          //context.clearRect(0, 0, $canvas.width(), $canvas.height());
+        }
+        
+      });
+
+
+      function things(){
+        return false;
+        var base_image = new Image();
+          base_image.src = '1.png';
+
+        base_image.onload = function(){
+        context.drawImage(base_image, 0, 50, 200, 200 * base_image.height / base_image.width);
+        }
+      }
+
+
+
+    </script>
+
+    <div style="position:absolute; top:0; left:0; min-width:100%; min-height:100%; z-index:1;" id="screens" class="screens">
+      <div class="screen"><a href="/" title="first"><img src="1.png"></a></div>
+      <div class="screen"><a href="/" title="second"><img src="2.png"></a></div>
+      <div class="screen"><a href="/" title="third"><img src="3.png"></a></div>
+      <div class="screen"><a href="/" title="fourth"><img src="4.png"></a></div>
+      <div class="screen"><a href="/" title="fifth"><img src="1.png"></a></div>
+      <div class="screen"><a href="/" title="sixth"><img src="2.png"></a></div>
+      <div class="screen"><a href="/" title="seventh"><img src="3.png"></a></div>
+      <div class="screen"><a href="/" title="eighth"><img src="4.png"></a></div>
+      <div class="screen"><a href="/" title="ninth"><img src="1.png"></a></div>
+      <div class="screen"><a href="/" title="tenth"><img src="2.png"></a></div>
+      <div class="screen"><a href="/" title="eleventh"><img src="3.png"></a></div>
+      <div class="screen"><a href="/" title="twelveth"><img src="4.png"></a></div>
+      <div class="screen"><a href="/" title="thirteenth"><img src="1.png"></a></div>
+      <div class="screen"><a href="/" title="fourteenth"><img src="2.png"></a></div>
+      <div class="screen"><a href="/" title="fifteenth"><img src="3.png"></a></div>
+      <div class="screen"><a href="/" title="sixteenth"><img src="4.png"></a></div>
+
+    </div>
+
+
+
+<style>
+
+  .screens .screen {
+    display:block; float:left; width:85px; text-align:center;
+    padding:20px 20px 65px;
+    min-height:155px;
+  }
+
+  .ui-state-highlight {
+    background:#eee;
+    -webkit-filter:blur(0px);
+    display:block; float:left; width:85px; text-align:center;
+    margin:20px 20px 65px;
+    min-height:155px;
+    border-radius:5px;
+  }
+
+  .screens div a img {border-radius:0px; /*border:1px solid #B5B5B5;*/ box-sizing:border-box; max-width:100%;}
+  .screens div a {  display:block; box-shadow:rgba(0,0,0,0.5) 0 0 3px;}
+  .screens div a img {
+    display:block;
+
+    /*border:3px solid transparent;*/
+  }
+  .screens div a img {
+    outline:4px solid transparent;
+  }
+  .screens div a:active img,
+  .screens div a.active img {
+    outline:4px solid #0184FA;
+  }
+  .screen a {position:relative;}
+
+  .screen a:after {
+    content:attr(title);
+    display:block;
+    width:100%;
+    height:30px;
+    font-family:sans-serif;
+    font-size:12px;
+    line-height:26px;
+    white-space: nowrap;
+    text-overflow:ellipsis;
+    overflow:hidden;
+    position:absolute;
+    bottom:-45px; left:0;
+    border:2px solid white;
+    box-shadow:rgba(0,0,0,0.5) 0 2px 5px;
+    text-align:center;
+    background:black;
+    border-radius:6px;
+    box-sizing:border-box;
+    color:white;
+    padding:0 3px;
+
+background: #757575;
+background: -moz-linear-gradient(top, #757575 0%, #282828 100%);
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#757575), color-stop(100%,#282828));
+background: -webkit-linear-gradient(top, #757575 0%,#282828 100%);
+background: -o-linear-gradient(top, #757575 0%,#282828 100%);
+background: -ms-linear-gradient(top, #757575 0%,#282828 100%);
+background: linear-gradient(to bottom, #757575 0%,#282828 100%);
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#757575', endColorstr='#282828',GradientType=0 );
+
+  }
+
+  .screens div.screen.active a:before {
+    content:' ';
+    display:block;
+    width:100%;
+    height:100%;
+    position:absolute;
+    top:-8px; left:-8px;
+    background:rgba(195, 208, 228, 0.3);
+    border:1px solid rgba(195, 208, 228, 1);
+    border-radius:4px;
+    padding:7px;
+  }
+
+  #workspace.active {
+    pointer-events:all;
+  }
+  #workspace {
+    pointer-events:none;
+  }
+</style>
+
+<script>
+  
+  $('div','.screens').on('mousedown', function(e){
+    e.preventDefault();
+    $(this).find('a').addClass('active').parents('div:first').siblings('div').find('a').removeClass('active');
+  });
+
+  $('div','.screens').on('click', function(e){
+    e.preventDefault();
+  });
+
+
+
+  $('#screens').sortable({
+    item:'.screen',
+    placeholder:'ui-state-highlight'
+  });
+
+
+  $(window).on('resize',function(){
+    context.canvas.width  = getDocWidth();
+    context.canvas.height = getDocHeight();
+  });
+
+function getDocWidth() {
+    var D = document;
+    return Math.max(
+        D.body.scrollWidth, D.documentElement.scrollWidth,
+        D.body.offsetWidth, D.documentElement.offsetWidth,
+        D.body.clientWidth, D.documentElement.clientWidth
+    );
+}
+function getDocHeight() {
+    var D = document;
+    return Math.max(
+        D.body.scrollHeight, D.documentElement.scrollHeight,
+        D.body.offsetHeight, D.documentElement.offsetHeight,
+        D.body.clientHeight, D.documentElement.clientHeight
+    );
+}
+
+
+
+
+
+
+
+
+
+</script>
+
+  </body>
+</html>
